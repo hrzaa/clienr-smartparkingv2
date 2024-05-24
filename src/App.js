@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
+import Users from "./components/Users";
 import ParkingList from "./components/ParkingList";
+import ParkingListv1 from "./components/ParkingListv1";
 import EmptyParking from "./components/EmptyParking";
+import Laporan from "./components/Laporan";
 import Login from "./components/Login";
+import Register from "./components/Register";
+import Settings from "./components/Settings";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   useEffect(() => {
@@ -12,15 +18,51 @@ function App() {
 
   return (
     <div className="container">
-      <BrowserRouter>
+      <Router>
         <Routes>
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/parkings"
+            element={
+              <PrivateRoute>
+                <ParkingList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <PrivateRoute>
+                <Users />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            }
+          />
+
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/parkings" element={<ParkingList />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/parkings" element={<ParkingList />} /> */}
+          <Route path="/parkingsv1" element={<ParkingListv1 />} />
           <Route path="/emptyParking" element={<EmptyParking />} />
+          <Route path="/laporan" element={<Laporan />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
@@ -6,23 +6,37 @@ import Cookies from "js-cookie";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
+
+const fetcher = async (url) => {
+  const response = await axios.get(url);
+  return response.data;
+};
+
+
 const Dashboard = () => {
 
   const apiKey = Cookies.get("token");
+  
+  const { data: parkingsData, error: parkingsError } = useSWR(
+    `http://localhost:5000/api/parkings?apiKey=${apiKey}`,
+    fetcher
+  );
 
-  const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/parkings?apiKey=${apiKey}`
-    );
-    return response.data;
-  };
+  const { data: usersData, error: usersError } = useSWR(
+    `http://localhost:5000/api/users?apiKey=${apiKey}`,
+    fetcher
+  );
 
-  const { data } = useSWR("parkings", fetcher);
-  if (!data || !data.data) return <h2>Loading...</h2>;
+   if (parkingsError || usersError) {
+     return <h2>Error loading data</h2>;
+   }
 
-  const parkingData = data.data;
-  const jumlahData = parkingData.length;
+   if (!parkingsData || !usersData) {
+     return <h2>Loading...</h2>;
+   }
+
+   const totalParkingsLength = parkingsData.data.length;
+   const totalUsersLength = usersData.data.length;
 
  
   return (
@@ -43,7 +57,7 @@ const Dashboard = () => {
             >
               <p class="font-normal text-gray-700">Total Visitors</p>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                {jumlahData}
+                {totalParkingsLength}
               </h5>
             </a>
             <a
@@ -52,7 +66,7 @@ const Dashboard = () => {
             >
               <p class="font-normal text-gray-700">Parking Available</p>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                2,340
+                10
               </h5>
             </a>
             <a
@@ -61,7 +75,7 @@ const Dashboard = () => {
             >
               <p class="font-normal text-gray-700">User signups this week</p>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                2,340
+                { totalUsersLength }
               </h5>
             </a>
           </div>

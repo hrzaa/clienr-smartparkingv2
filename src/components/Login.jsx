@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -24,6 +24,7 @@ function Login() {
       const isSecure = window.location.protocol === "http:";
 
       Cookies.set("userId", data.userId, { secure: isSecure });
+      Cookies.set("username", data.username, { secure: isSecure });
       Cookies.set("token", data.token, { secure: isSecure });
       Cookies.set("role", data.role, { secure: isSecure });
 
@@ -34,67 +35,85 @@ function Login() {
   }
 
    return (
-     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-           Smart Parking System
-         </h2>
-       </div>
-       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-         <form className="space-y-6" onSubmit={handleLogin}>
-           <div>
-             <label
-               htmlFor="username"
-               className="block text-sm font-medium leading-6 text-gray-900"
-             >
-               Username
-             </label>
-             <div className="mt-2">
-               <input
-                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                 id="username"
-                 type="text"
-                 placeholder="Username"
-                 value={username}
-                 onChange={(e) => setUsername(e.target.value)}
-                 required
-               />
-             </div>
-           </div>
+     <section class="bg-gray-50">
+       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+         <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 ">
+           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+             <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
+               Smart Parking System
+             </h1>
 
-           <div>
-             <div className="flex items-center justify-between">
-               <label
-                 htmlFor="password"
-                 className="block text-sm font-medium leading-6 text-gray-900"
+             <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
+               <div>
+                 <label
+                   htmlFor="username"
+                   className="block mb-2 text-sm font-medium text-gray-900 "
+                 >
+                   Username
+                 </label>
+                 <input
+                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                   id="username"
+                   type="text"
+                   placeholder="Username"
+                   value={username}
+                   onChange={(e) => setUsername(e.target.value)}
+                   required
+                 />
+               </div>
+
+               <div>
+                 <label
+                   htmlFor="password"
+                   className="block mb-2 text-sm font-medium text-gray-900"
+                 >
+                   Password
+                 </label>
+                 <input
+                   id="password"
+                   type="password"
+                   placeholder="Password"
+                   value={password}
+                   onChange={(e) => setPassword(e.target.value)}
+                   required
+                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                 />
+               </div>
+               <button
+                 type="submit"
+                 class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                >
-                 Password
-               </label>
-             </div>
-             <div className="mt-2">
-               <input
-                 id="password"
-                 type="password"
-                 placeholder="Password"
-                 value={password}
-                 onChange={(e) => setPassword(e.target.value)}
-                 required
-                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-               />
-             </div>
-           </div>
+                 Sign in
+               </button>
+               <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                 Don’t have an account yet?{" "}
+                 <Link
+                   to="/register"
+                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                 >
+                   Sign Up
+                 </Link>
+                 {/* <a
+                   href="#"
+                   class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                 >
+                   Sign up
+                 </a> */}
+               </p>
 
-           <div>
-             <button
-               type="submit"
-               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-             >
-               Sign in
-             </button>
+               {/* <div>
+                 <button
+                   type="submit"
+                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                 >
+                   Sign in
+                 </button>
+               </div> */}
+             </form>
            </div>
-         </form>
+         </div>
        </div>
-     </div>
+     </section>
    );
 
 };
