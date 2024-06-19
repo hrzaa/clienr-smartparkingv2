@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -30,7 +31,15 @@ function Login() {
 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error.response ? error.response.data : error.message);
+      const errorMessage =
+        error.response && error.response.data && error.response.data.errors
+          ? error.response.data.errors
+          : error.message;
+      // alert(`Registration error: ${errorMessage}`);
+      setError(errorMessage);
+      // console.error("Registration error:", errorMessage);
+
+      // console.error("Login error:", error.response ? error.response.data : error.message);
     }
   }
 
@@ -44,6 +53,14 @@ function Login() {
              </h1>
 
              <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
+               {error && (
+                 <div
+                   class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+                   role="alert"
+                 >
+                   <p class="font-bold">{error}</p>
+                 </div>
+               )}
                <div>
                  <label
                    htmlFor="username"

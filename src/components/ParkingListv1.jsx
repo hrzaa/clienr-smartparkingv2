@@ -3,20 +3,26 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import Cookies from "js-cookie";
+
 import moment from "moment";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 const ParkingList = () => {
+ const apiKey = Cookies.get("token");
 
  const { mutate } = useSWRConfig();
  const fetcher = async () => {
-   const res = await axios.get("http://203.194.114.88/parkings");
+   const res = await axios.get(
+     `http://localhost:5000/api/parkings?apiKey=${apiKey}`
+   );
    return res.data;
  };
 
  const { data } = useSWR("parkingv1", fetcher);
- if (!data) return <h2>Loading...</h2>;
+ if (!data || !data.data) return <h2>Loading...</h2>;
+
+ const parkingDatalOCAL = data.data;
 
   return (
     <div>
@@ -28,7 +34,7 @@ const ParkingList = () => {
             <div className="w-full mx-auto p-10">
               <div className="text-center">
                 <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
-                  List All Parking
+                  List All Parking LOCAL
                 </h1>
               </div>
               <div className="relative shadow rounded-lg mt-3">
@@ -41,10 +47,13 @@ const ParkingList = () => {
                       <th className="py-3 px-6">Parking In</th>
                       <th className="py-3 px-6">Parking Out</th>
                       <th className="py-3 px-6">Total Time</th>
+                      <th className="py-3 px-6">Price</th>
+                      <th className="py-3 px-6">TransactionId</th>
+                      <th className="py-3 px-6">Transaction Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((parkings, index) => (
+                    {parkingDatalOCAL.map((parkings, index) => (
                       <tr className="bg-white border-b" key={parkings.id}>
                         <td className="py-3 px-1 text-center">{index + 1}</td>
                         <td className="py-3 px-6 font-medium text-gray-900">
@@ -56,15 +65,15 @@ const ParkingList = () => {
                           </button>
                         </td>
                         <td className="py-3 px-6">
-                          {moment(parkings.timein)
+                          {moment(parkings.parkingin)
                             .utc()
                             .add(7, "hours")
                             .format("YYYY-MM-DD HH:mm:ss")}
                         </td>
 
                         <td className="py-3 px-6">
-                          {parkings.timeout
-                            ? moment(parkings.timeout)
+                          {parkings.parkingout
+                            ? moment(parkings.parkingout)
                                 .utc()
                                 .add(7, "hours")
                                 .format("YYYY-MM-DD HH:mm:ss")
@@ -72,9 +81,24 @@ const ParkingList = () => {
                         </td>
 
                         <td className="py-3 px-6">
-                          {parkings.total_time !== null
-                            ? `${parkings.total_time} Hours`
+                          {parkings.totaltime !== null
+                            ? `${parkings.totaltime} Hours`
                             : "On Progress"}
+                        </td>
+                        <td className="py-3 px-6">Rp.
+                          {parkings.transactions
+                            ? parkings.transactions.totalprice
+                            : "N/A"}
+                        </td>
+                        <td className="py-3 px-6">
+                          {parkings.transactions
+                            ? parkings.transactions.transactionId
+                            : "N/A"}
+                        </td>
+                        <td className="py-3 px-6">
+                          {parkings.transactions
+                            ? parkings.transactions.transactionstatus
+                            : "N/A"}
                         </td>
                       </tr>
                     ))}

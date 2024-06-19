@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import moment from "moment";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { API_BASE_URL } from "../config";
 
 const ParkingList = () => {
   const apiKey = Cookies.get("token");
@@ -13,7 +14,7 @@ const ParkingList = () => {
   const { mutate } = useSWRConfig();
   const fetcher = async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/parkings?apiKey=${apiKey}`
+      `https://harezayoankristianto.online/api/parkings?apiKey=${apiKey}`
     );
     return response.data;
   };
