@@ -46,8 +46,14 @@ const Gates = () => {
                       {gates.gatesName}
                     </td>
                     <td className="py-3 px-6">
-                      <button class="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        {gates.gatesStatus}
+                      <button
+                        className={`justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                          gates.gateStatus === 1
+                            ? "bg-green-600 hover:bg-green-500 focus-visible:outline-green-600"
+                            : "bg-red-600 hover:bg-red-500 focus-visible:outline-red-600"
+                        }`}
+                      >
+                        {gates.gateStatus === 1 ? "Active" : "Inactive"}
                       </button>
                     </td>
                   </tr>
