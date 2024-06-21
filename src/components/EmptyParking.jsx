@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { API_BASE_URL } from "../config";
 
 const EmptyParking = () => {
   const [parkingData, setParkingData] = useState([]);
@@ -40,7 +41,7 @@ const EmptyParking = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://harezayoankristianto.online/api/areas"
+          `${API_BASE_URL}areas`
         );
         setParkingData(response.data.data);
         setLoading(false);

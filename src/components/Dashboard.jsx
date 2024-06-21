@@ -5,6 +5,7 @@ import useSWR, { useSWRConfig } from "swr";
 import Cookies from "js-cookie";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { API_BASE_URL } from "../config";
 
 
 const fetcher = async (url) => {
@@ -18,12 +19,12 @@ const Dashboard = () => {
   const apiKey = Cookies.get("token");
   
   const { data: parkingsData, error: parkingsError } = useSWR(
-    `http://localhost:5000/api/parkings?apiKey=${apiKey}`,
+    `${API_BASE_URL}parkings?apiKey=${apiKey}`,
     fetcher
   );
 
   const { data: usersData, error: usersError } = useSWR(
-    `http://localhost:5000/api/users?apiKey=${apiKey}`,
+    `${API_BASE_URL}users?apiKey=${apiKey}`,
     fetcher
   );
 

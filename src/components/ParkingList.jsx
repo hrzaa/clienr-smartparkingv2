@@ -14,7 +14,7 @@ const ParkingList = () => {
   const { mutate } = useSWRConfig();
   const fetcher = async () => {
     const response = await axios.get(
-      `https://harezayoankristianto.online/api/parkings?apiKey=${apiKey}`
+      `${API_BASE_URL}parkings?apiKey=${apiKey}`
     );
     return response.data;
   };
