@@ -47,31 +47,33 @@ const ParkingList = () => {
                       <th className="py-3 px-6">Parking In</th>
                       <th className="py-3 px-6">Parking Out</th>
                       <th className="py-3 px-6">Total Time</th>
-                      {/* <th className="py-3 px-1 text-center">Action</th> */}
+                      <th className="py-3 px-6">Price</th>
+                      <th className="py-3 px-6">TransactionId</th>
+                      <th className="py-3 px-6">Transaction Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {parkingData.map((parking, index) => (
-                      <tr className="bg-white border-b" key={parking.parkingId}>
+                    {parkingData.map((parkings, index) => (
+                      <tr className="bg-white border-b" key={parkings.id}>
                         <td className="py-3 px-1 text-center">{index + 1}</td>
                         <td className="py-3 px-6 font-medium text-gray-900">
-                          {parking.code}
+                          {parkings.code}
                         </td>
                         <td className="py-3 px-6">
                           <button class="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            {parking.status}
+                            {parkings.status}
                           </button>
                         </td>
                         <td className="py-3 px-6">
-                          {moment(parking.parkingin)
+                          {moment(parkings.parkingin)
                             .utc()
                             .add(7, "hours")
                             .format("YYYY-MM-DD HH:mm:ss")}
                         </td>
 
                         <td className="py-3 px-6">
-                          {parking.parkingout
-                            ? moment(parking.parkingout)
+                          {parkings.parkingout
+                            ? moment(parkings.parkingout)
                                 .utc()
                                 .add(7, "hours")
                                 .format("YYYY-MM-DD HH:mm:ss")
@@ -79,9 +81,25 @@ const ParkingList = () => {
                         </td>
 
                         <td className="py-3 px-6">
-                          {parking.totaltime !== null
-                            ? `${parking.totaltime} Hours`
+                          {parkings.totaltime !== null
+                            ? `${parkings.totaltime} Hours`
                             : "On Progress"}
+                        </td>
+                        <td className="py-3 px-6">
+                          Rp.
+                          {parkings.transactions
+                            ? parkings.transactions.totalprice
+                            : "N/A"}
+                        </td>
+                        <td className="py-3 px-6">
+                          {parkings.transactions
+                            ? parkings.transactions.transactionId
+                            : "N/A"}
+                        </td>
+                        <td className="py-3 px-6">
+                          {parkings.transactions
+                            ? parkings.transactions.transactionstatus
+                            : "N/A"}
                         </td>
                       </tr>
                     ))}
