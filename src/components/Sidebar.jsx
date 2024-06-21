@@ -3,15 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
 
-   const navigate = useNavigate();
-
-   const handleLogout = () => {
-     Cookies.remove("token");
-     Cookies.remove("role");
-     Cookies.remove("userId");
-     navigate("/");
-   };
+  const handleLogout = () => {
+    Cookies.remove("token");
+    Cookies.remove("role");
+    Cookies.remove("userId");
+    navigate("/");
+  };
 
   return (
     <aside
@@ -208,7 +207,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/aldini"
+              to="/parking_areas_2"
               target="blank"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
@@ -221,7 +220,9 @@ const Sidebar = () => {
               >
                 <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
               </svg>
-              <span className="flex-1 ms-3 whitespace-nowrap">Aldini</span>
+              <span className="flex-1 ms-3 whitespace-nowrap">
+                Parking detection
+              </span>
             </Link>
           </li>
         </ul>

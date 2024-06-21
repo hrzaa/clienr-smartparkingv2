@@ -9,11 +9,14 @@ import EmptyParking from "./components/EmptyParking";
 import Laporan from "./components/Laporan";
 import Payment from "./components/Payment";
 import Success from "./components/Success";
+import Gates from "./components/Gates";
 import Aldini from "./components/aldini/index";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Settings from "./components/Settings";
 import PrivateRoute from "./components/PrivateRoute";
+import ParkingDetection1 from "./components/aldini/ParkingDetection1";
+import ParkingDetection2 from "./components/aldini/ParkingDetection2";
 
 function App() {
   useEffect(() => {
@@ -57,6 +60,14 @@ function App() {
               </PrivateRoute>
             }
           />
+          {/* <Route
+            path="/gates"
+            element={
+              <PrivateRoute>
+                <Gates />
+              </PrivateRoute>
+            }
+          /> */}
           <Route
             path="/settings"
             element={
@@ -75,7 +86,10 @@ function App() {
           <Route path="/laporan" element={<Laporan />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/Success" element={<Success />} />
+          <Route path="/parking_areas_1" element={<ParkingDetection1 />} />
+          <Route path="/parking_areas_2" element={<ParkingDetection2 />} />
           <Route path="/aldini" element={<Aldini />} />
+          <Route path="/gates" element={<Gates />} />
         </Routes>
       </Router>
     </div>

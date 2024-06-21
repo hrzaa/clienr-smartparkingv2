@@ -1,20 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import Cookies from "js-cookie";
-import moment from "moment";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { API_BASE_URL } from "../config";
 
 const Users = () => {
    const apiKey = Cookies.get("token");
 
    const { mutate } = useSWRConfig();
    const fetcher = async () => {
-     const response = await axios.get(
-       `http://localhost:5000/api/users?apiKey=${apiKey}`
-     );
+     const response = await axios.get(`${API_BASE_URL}users?apiKey=${apiKey}`);
      return response.data;
    };
 
