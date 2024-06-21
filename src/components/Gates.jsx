@@ -53,7 +53,7 @@ const Gates = () => {
                             : "bg-red-600 hover:bg-red-500 focus-visible:outline-red-600"
                         }`}
                       >
-                        {gates.gateStatus === 1 ? "Active" : "Inactive"}
+                        {gates.gateStatus === 1 ? "Open" : "Close"}
                       </button>
                     </td>
                   </tr>
