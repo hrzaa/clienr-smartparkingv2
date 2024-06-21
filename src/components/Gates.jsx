@@ -7,7 +7,6 @@ import Navbar from "./Navbar";
 import { API_BASE_URL } from "../config";
 
 const Gates = () => {
-  // const apiKey = Cookies.get("token");
 
   const { mutate } = useSWRConfig();
   const fetcher = async () => {
@@ -15,10 +14,10 @@ const Gates = () => {
     return response.data;
   };
 
-  const { data } = useSWR("users", fetcher);
+  const { data } = useSWR("gates", fetcher);
   if (!data || !data.data) return <h2>Loading...</h2>;
 
-  const usersData = data.data;
+  const gatesData = data.data;
   return (
     <div>
       <Navbar />
@@ -40,7 +39,19 @@ const Gates = () => {
                 </tr>
               </thead>
               <tbody>
-               
+                {gatesData.map((gates, index) => (
+                  <tr className="bg-white border-b" key={gates.gatesId}>
+                    <td className="py-3 px-1 text-center">{index + 1}</td>
+                    <td className="py-3 px-6 font-medium text-gray-900">
+                      {gates.gatesName}
+                    </td>
+                    <td className="py-3 px-6">
+                      <button class="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        {gates.gatesStatus}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
