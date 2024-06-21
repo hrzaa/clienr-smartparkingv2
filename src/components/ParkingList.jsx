@@ -86,20 +86,24 @@ const ParkingList = () => {
                             : "On Progress"}
                         </td>
                         <td className="py-3 px-6">
-                          Rp.
-                          {parkings.transactions
-                            ? parkings.transactions.totalprice
-                            : "N/A"}
-                        </td>
-                        <td className="py-3 px-6">
                           {parkings.transactions
                             ? parkings.transactions.transactionId
                             : "N/A"}
                         </td>
                         <td className="py-3 px-6">
-                          {parkings.transactions
-                            ? parkings.transactions.transactionstatus
-                            : "N/A"}
+                          {parkings.transactions &&
+                          parkings.transactions.totalprice !== undefined
+                            ? `Rp ${parkings.transactions.totalprice.toLocaleString()}`
+                            : "Counting"}
+                        </td>
+                        <td className="py-3 px-6">
+                          {parkings.transactions ? (
+                            <button class="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                              {parkings.transactions.transactionstatus}
+                            </button>
+                          ) : (
+                            "N/A"
+                          )}
                         </td>
                       </tr>
                     ))}
