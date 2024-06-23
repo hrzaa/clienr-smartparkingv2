@@ -9,46 +9,35 @@ import Sidebar from "./Sidebar";
 import { API_BASE_URL } from "../config";
 
 const ParkingList = () => {
-    const apiKey = Cookies.get("token");
+ const apiKey = Cookies.get("token");
 
-    const [parkingData, setParkingData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+ const [parkingData, setParkingData] = useState([]);
+ const [loading, setLoading] = useState(true);
+ const [error, setError] = useState(null);
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}parkings?apiKey=${apiKey}`
-        );
-        setParkingData(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
+ const fetchData = async () => {
+   try {
+     const response = await axios.get(
+       `${API_BASE_URL}parkings?apiKey=${apiKey}`
+     );
+     if (response.data && Array.isArray(response.data.data)) {
+       setParkingData(response.data.data);
+     } else {
+       setParkingData([]); // Pastikan set ke array jika data tidak sesuai
+     }
+     setLoading(false);
+   } catch (error) {
+     setError(error);
+     setLoading(false);
+   }
+ };
 
-    useEffect(() => {
-      fetchData();
-    });
-  // const apiKey = Cookies.get("token");
+ useEffect(() => {
+   fetchData();
+ }, []);
 
-  // const { mutate } = useSWRConfig();
-  // const fetcher = async () => {
-  //   const response = await axios.get(
-  //     `${API_BASE_URL}parkings?apiKey=${apiKey}`
-  //   );
-  //   return response.data;
-  // };
-
-  // useEffect(() => {
-  //   fetcher();
-  // });
-
-  // const { data } = useSWR("parkingv2", fetcher);
-  // if (!data || !data.data) return <h2>Loading...</h2>;
-
-  // const parkingData = data.data;
+ if (loading) return <h2>Loading...</h2>;
+ if (error) return <h2>Error loading data</h2>;
 
   return (
     <div>
