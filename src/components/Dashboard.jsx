@@ -28,16 +28,22 @@ const Dashboard = () => {
     fetcher
   );
 
-   if (parkingsError || usersError) {
+  const { data: transactionsData, error: transactionsError } = useSWR(
+    `${API_BASE_URL}transactions/count?apiKey=${apiKey}`,
+    fetcher
+  );
+
+   if (parkingsError || usersError || transactionsError) {
      return <h2>Error loading data</h2>;
    }
 
-   if (!parkingsData || !usersData) {
+   if (!parkingsData || !usersData || !transactionsData) {
      return <h2>Loading...</h2>;
    }
 
-   const totalParkingsLength = parkingsData.data.length;
-   const totalUsersLength = usersData.data.length;
+    const totalParkingsLength = parkingsData.data.length;
+    const totalUsersLength = usersData.data.length;
+    // const totalTransactions = transactionsData?.data ?? 0;
 
  
   return (
@@ -65,9 +71,9 @@ const Dashboard = () => {
               href="#"
               class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 "
             >
-              <p class="font-normal text-gray-700">Parking Available</p>
+              <p class="font-normal text-gray-700">Total Paid Transactions</p>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                10
+                {transactionsData.data}
               </h5>
             </a>
             <a
@@ -76,7 +82,7 @@ const Dashboard = () => {
             >
               <p class="font-normal text-gray-700">User signups this week</p>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                { totalUsersLength }
+                {totalUsersLength}
               </h5>
             </a>
           </div>

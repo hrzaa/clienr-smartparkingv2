@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
@@ -9,20 +9,46 @@ import Sidebar from "./Sidebar";
 import { API_BASE_URL } from "../config";
 
 const ParkingList = () => {
-  const apiKey = Cookies.get("token");
+    const apiKey = Cookies.get("token");
 
-  const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get(
-      `${API_BASE_URL}parkings?apiKey=${apiKey}`
-    );
-    return response.data;
-  };
+    const [parkingData, setParkingData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  const { data } = useSWR("parkingv2", fetcher);
-  if (!data || !data.data) return <h2>Loading...</h2>;
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}parkings?apiKey=${apiKey}`
+        );
+        setParkingData(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
 
-  const parkingData = data.data;
+    useEffect(() => {
+      fetchData();
+    });
+  // const apiKey = Cookies.get("token");
+
+  // const { mutate } = useSWRConfig();
+  // const fetcher = async () => {
+  //   const response = await axios.get(
+  //     `${API_BASE_URL}parkings?apiKey=${apiKey}`
+  //   );
+  //   return response.data;
+  // };
+
+  // useEffect(() => {
+  //   fetcher();
+  // });
+
+  // const { data } = useSWR("parkingv2", fetcher);
+  // if (!data || !data.data) return <h2>Loading...</h2>;
+
+  // const parkingData = data.data;
 
   return (
     <div>
@@ -47,8 +73,8 @@ const ParkingList = () => {
                       <th className="py-3 px-6">Parking In</th>
                       <th className="py-3 px-6">Parking Out</th>
                       <th className="py-3 px-6">Total Time</th>
-                      <th className="py-3 px-6">Price</th>
                       <th className="py-3 px-6">TransactionId</th>
+                      <th className="py-3 px-6">Price</th>
                       <th className="py-3 px-6">Transaction Status</th>
                     </tr>
                   </thead>
