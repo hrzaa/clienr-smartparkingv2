@@ -9,35 +9,37 @@ import Sidebar from "./Sidebar";
 import { API_BASE_URL } from "../config";
 
 const ParkingList = () => {
- const apiKey = Cookies.get("token");
+  const apiKey = Cookies.get("token");
 
- const [parkingData, setParkingData] = useState([]);
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState(null);
+  const [parkingData, setParkingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
- const fetchData = async () => {
-   try {
-     const response = await axios.get(
-       `${API_BASE_URL}parkings?apiKey=${apiKey}`
-     );
-     if (response.data && Array.isArray(response.data.data)) {
-       setParkingData(response.data.data);
-     } else {
-       setParkingData([]); // Pastikan set ke array jika data tidak sesuai
-     }
-     setLoading(false);
-   } catch (error) {
-     setError(error);
-     setLoading(false);
-   }
- };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}parkings?apiKey=${apiKey}`
+      );
+      if (response.data && Array.isArray(response.data.data)) {
+        setParkingData(response.data.data);
+      } else {
+        setParkingData([]); // Pastikan set ke array jika data tidak sesuai
+      }
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
 
- useEffect(() => {
-   fetchData();
- }, []);
+  useEffect(() => {
+    fetchData();
+    // Tambahkan polling data baru setiap 5 detik
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval); // Bersihkan interval saat komponen dibongkar
+  }, []); // Array kosong memastikan efek hanya dijalankan saat pemasangan
 
- if (loading) return <h2>Loading...</h2>;
- if (error) return <h2>Error loading data</h2>;
+  console.log(parkingData);
 
   return (
     <div>
@@ -48,7 +50,7 @@ const ParkingList = () => {
           <div className="flex flex-col mt-5">
             <div className="w-full mx-auto p-10">
               <div className="text-center">
-                <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
+                <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
                   List All Parking
                 </h1>
               </div>
@@ -75,7 +77,7 @@ const ParkingList = () => {
                           {parkings.code}
                         </td>
                         <td className="py-3 px-6">
-                          <button class="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                          <button className="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             {parkings.status}
                           </button>
                         </td>
@@ -113,7 +115,7 @@ const ParkingList = () => {
                         </td>
                         <td className="py-3 px-6">
                           {parkings.transactions ? (
-                            <button class="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            <button className="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                               {parkings.transactions.transactionstatus}
                             </button>
                           ) : (
