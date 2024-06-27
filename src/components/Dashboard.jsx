@@ -46,50 +46,52 @@ const Dashboard = () => {
     // const totalTransactions = transactionsData?.data ?? 0;
 
  
-  return (
-    <div>
-      <Navbar />
-      <Sidebar />
-      <div className="p-4 sm:ml-64">
-        <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-          <div className="text-center">
-            <h1 className="mt-4 font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
-              Dashboard
-            </h1>
-          </div>
-          <div class="grid grid-cols-3 gap-4 mb-4">
-            <a
-              href="#"
-              class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 "
-            >
-              <p class="font-normal text-gray-700">Total Visitors</p>
-              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                {totalParkingsLength}
-              </h5>
-            </a>
-            <a
-              href="#"
-              class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 "
-            >
-              <p class="font-normal text-gray-700">Total Paid Transactions</p>
-              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                {transactionsData.data}
-              </h5>
-            </a>
-            <a
-              href="#"
-              class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 "
-            >
-              <p class="font-normal text-gray-700">User signups this week</p>
-              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                {totalUsersLength}
-              </h5>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ return (
+   <div className="flex">
+     <Navbar />
+     <Sidebar />
+     <div className="flex-grow p-4 sm:ml-64">
+       <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-16 sm:mt-14">
+         <div className="text-center">
+           <h1 className="mt-4 text-2xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-10">
+             Dashboard
+           </h1>
+         </div>
+         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+           <a
+             href="#"
+             className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100"
+           >
+             <p className="font-normal text-gray-700">Total Visitors</p>
+             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+               {totalParkingsLength}
+             </h5>
+           </a>
+           <a
+             href="#"
+             className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100"
+           >
+             <p className="font-normal text-gray-700">
+               Total Paid Transactions
+             </p>
+             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+               {transactionsData.data}
+             </h5>
+           </a>
+           <a
+             href="#"
+             className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100"
+           >
+             <p className="font-normal text-gray-700">User Signups This Week</p>
+             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+               {totalUsersLength}
+             </h5>
+           </a>
+         </div>
+       </div>
+     </div>
+   </div>
+ );
 };
 
 export default Dashboard;

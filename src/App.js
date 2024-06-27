@@ -60,14 +60,6 @@ function App() {
               </PrivateRoute>
             }
           />
-          {/* <Route
-            path="/gates"
-            element={
-              <PrivateRoute>
-                <Gates />
-              </PrivateRoute>
-            }
-          /> */}
           <Route
             path="/settings"
             element={
@@ -80,7 +72,6 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/parkings" element={<ParkingList />} /> */}
           <Route path="/parkingsv1" element={<ParkingListv1 />} />
           <Route path="/emptyParking" element={<EmptyParking />} />
           <Route path="/laporan" element={<Laporan />} />
