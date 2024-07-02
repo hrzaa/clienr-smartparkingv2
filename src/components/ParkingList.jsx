@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import useSWR, { useSWRConfig } from "swr";
 import Cookies from "js-cookie";
 import moment from "moment";
 import Navbar from "./Navbar";
@@ -10,35 +8,52 @@ import { API_BASE_URL } from "../config";
 
 const ParkingList = () => {
   const apiKey = Cookies.get("token");
-
   const [parkingData, setParkingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(10);
 
+useEffect(() => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}parkings?apiKey=${apiKey}`
+        `${API_BASE_URL}parkings?apiKey=${apiKey}&page=${page}&limit=${limit}`
       );
       if (response.data && Array.isArray(response.data.data)) {
         setParkingData(response.data.data);
+        setTotalPages(Math.ceil(response.data.meta.total / limit));
       } else {
-        setParkingData([]); // Pastikan set ke array jika data tidak sesuai
+        setParkingData([]);
+        setError(new Error("Invalid response format"));
       }
-      setLoading(false);
     } catch (error) {
       setError(error);
+    } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
+  const interval = setInterval(() => {
     fetchData();
-    const interval = setInterval(fetchData, 1000);
-    return () => clearInterval(interval); 
-  }, []); 
+  }, 5000); // Polling every 5 seconds (adjust as needed)
 
-  console.log(parkingData);
+  return () => clearInterval(interval); // Cleanup interval on unmount or dependencies change
+}, [page, apiKey, limit]);
+
+
+  const handlePreviousPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  if (loading) return <h2>Loading...</h2>;
+
+  if (error) return <h2>Error: {error.message}</h2>;
 
   return (
     <div className="flex flex-col sm:flex-row">
@@ -57,8 +72,8 @@ const ParkingList = () => {
                 <table className="w-full text-sm text-left text-gray-500">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-100">
                     <tr>
-                      <th className="py-3 px-1 text-center">No</th>
-                      <th className="py-3 px-2 sm:px-6">Code</th>
+                      <th className="py-3 px-2 text-center">No</th>
+                      <th className="py-3 px-2 sm:px-6">Number Plate</th>
                       <th className="py-3 px-2 sm:px-6">Status</th>
                       <th className="py-3 px-2 sm:px-6">Parking In</th>
                       <th className="py-3 px-2 sm:px-6">Parking Out</th>
@@ -71,7 +86,9 @@ const ParkingList = () => {
                   <tbody>
                     {parkingData.map((parkings, index) => (
                       <tr className="bg-white border-b" key={parkings.id}>
-                        <td className="py-3 px-1 text-center">{index + 1}</td>
+                        <td className="py-3 px-1 text-center">
+                          {index + 1 + (page - 1) * limit}
+                        </td>
                         <td className="py-3 px-2 sm:px-6 font-medium text-gray-900">
                           {parkings.code}
                         </td>
@@ -123,6 +140,25 @@ const ParkingList = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={page === 1}
+                  className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="text-sm">
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
               </div>
             </div>
           </div>
