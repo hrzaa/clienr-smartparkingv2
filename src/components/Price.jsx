@@ -1,71 +1,73 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../config";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { API_BASE_URL } from "../config";
 
-function Price() {
-  const [price, setPrice] = useState("");
+function Update() {
   const [priceId, setPriceId] = useState("");
+  const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchpriceData() {
+    async function fetchPriceData() {
       setLoading(true);
       try {
         const apiKey = Cookies.get("token");
-
         const response = await axios.get(
           `${API_BASE_URL}prices?apiKey=${apiKey}`
         );
         const priceData = response.data.data;
 
-        setPrice(priceData.price);
-        setPriceId(priceData.priceId);
-        setSuccess("");
-        setError("");
+        if (priceData) {
+          setPriceId(priceData.priceId);
+          setPrice(priceData.price);
+          setSuccess("");
+          setError("");
+        } else {
+          setError("No price data found.");
+        }
       } catch (error) {
         setError(
-          "Fetch user data error: " +
+          "Fetch price data error: " +
             (error.response ? error.response.data.message : error.message)
         );
       }
       setLoading(false);
     }
 
-    fetchpriceData();
+    fetchPriceData();
   }, []);
 
-  // const handleUpdate = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  //   try {
-  //     const apiKey = Cookies.get("token");
+    try {
+      const apiKey = Cookies.get("token");
 
-  //     await axios.patch(
-  //       `${API_BASE_URL}user/update/${userId}?apiKey=${apiKey}`,
-  //       {
-  //         username,
-  //         password,
-  //       }
-  //     );
+      const response = await axios.patch(
+        `${API_BASE_URL}price/update/${priceId}?apiKey=${apiKey}`,
+        { price: parseFloat(price) }
+      );
 
-  //     setSuccess("Akun sudah berhasil diperbarui");
-  //     setPassword("");
-  //   } catch (error) {
-  //     setError(
-  //       "Update error: " +
-  //         (error.response ? error.response.data.message : error.message)
-  //     );
-  //   }
-  //   setLoading(false);
-  // };
-
+      if (response.status === 200) {
+        setSuccess("Price updated successfully!");
+        setError("");
+      } else {
+        setError(`Unexpected response status: ${response.status}`);
+      }
+    } catch (error) {
+      setError(
+        "Update error: " +
+          (error.response ? error.response.data.message : error.message)
+      );
+    }
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -75,87 +77,61 @@ function Price() {
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
           <div className="text-center">
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
-              Price
+              Update Price
             </h1>
           </div>
-          <div className="mx-auto max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadowmt-3">
-            {loading ? (
-              <div className="flex justify-center items-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-            ) : (
-              <form className="space-y-6">
-                {success && (
-                  <div className="text-sm text-center text-green-600">
-                    {success}
-                  </div>
-                )}
-                {error && (
-                  <div className="text-sm text-center text-red-600">
-                    {error}
-                  </div>
-                )}
+          <div className="mx-auto max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow mt-3">
+            <form className="space-y-6" onSubmit={handleUpdate}>
+              {success && (
+                <div
+                  class="bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3"
+                  role="alert"
+                >
+                  <p class="font-bold">{success}</p>
+                </div>
+              )}
+              {error && (
+                <div
+                  class="bg-red-100 border-t border-b border-red-500 text-red-700 px-4 py-3"
+                  role="alert"
+                >
+                  <p class="font-bold">{error}</p>
+                </div>
+              )}
+              <div className="relative mt-2 rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <span className="text-gray-700 sm:text-sm">Rp.</span>
+                </div>
                 <input
-                  className="block w-full px-4 py-3 mt-4 text-gray-700 bg-white border rounded-md focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring focus:ring-opacity-40"
+                  className="block w-full rounded-md border-0 py-1.5 pl-8 pr-1 text-gray-700 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   id="price"
-                  type="text"
-                  placeholder="Price"
-                  value={priceId}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
-                />
-                <input
-                  className="block w-full px-4 py-3 mt-4 text-gray-700 bg-white border rounded-md focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring focus:ring-opacity-40"
-                  id="price"
-                  type="text"
+                  type="number"
                   placeholder="Price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
                 />
-                <button
-                  className="block w-full px-4 py-3 mt-4 text-center text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700 focus:outline-none transition duration-300 ease-in-out transform"
-                  type="submit"
-                >
-                  Update
-                </button>
-              </form>
-            )}
+              </div>
 
-            {/* {loading && <p>Loading...</p>}
-            {error && <p className="text-red-500">{error}</p>}
-            {success && <p className="text-green-500">{success}</p>}
-            {!loading && !error && (
-              <table className="min-w-full bg-white">
-                <thead>
-                  <tr>
-                    <th className="py-2">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {priceData.map((price, index) => (
-                    <tr className="bg-white" key={index}>
-                      <td className="px-4 py-2">
-                        <input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring focus:ring-opacity-40"
-                          id="price"
-                          type="text"
-                          placeholder="Price"
-                          value={price.price}
-                          readOnly
-                        />
-                        <button
-                          className="block w-full px-4 py-3 mt-4 text-center text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700 focus:outline-none transition duration-300 ease-in-out transform"
-                          type="submit"
-                        >
-                          Update
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )} */}
+              <input
+                className="block w-full px-4 py-3 mt-4 text-gray-700 bg-white border rounded-md focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring focus:ring-opacity-40"
+                id="priceId"
+                type="hidden"
+                placeholder="priceId"
+                value={priceId}
+                onChange={(e) => setPriceId(e.target.value)}
+                readOnly
+                required
+              />
+
+              <button
+                className="block w-full px-4 py-3 mt-4 text-center text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700 focus:outline-none transition duration-300 ease-in-out transform"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "Update"}
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -163,4 +139,4 @@ function Price() {
   );
 }
 
-export default Price;
+export default Update;
