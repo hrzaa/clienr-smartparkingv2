@@ -15,33 +15,78 @@ const ParkingList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
 
-useEffect(() => {
-  const fetchData = async () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalData, setModalData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}parkings?apiKey=${apiKey}&page=${page}&limit=${limit}`
+        );
+        if (response.data && Array.isArray(response.data.data)) {
+          setParkingData(response.data.data);
+          setTotalPages(Math.ceil(response.data.meta.total / limit));
+        } else {
+          setParkingData([]);
+          setError(new Error("Invalid response format"));
+        }
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5000); // Polling every 5 seconds (adjust as needed)
+
+    return () => clearInterval(interval); // Cleanup interval on unmount or dependencies change
+  }, [page, apiKey, limit]);
+
+  const handleDelete = async(parkingId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this parking entry?"
+    );
+    if (!confirmed) return;
+
+     try {
+       await axios.delete(
+         `${API_BASE_URL}parkings/remove/${parkingId}?apiKey=${apiKey}`
+       );
+
+       setParkingData(
+         parkingData.filter((parking) => parking.parkingId !== parkingId)
+       );
+       alert("Parking entry deleted successfully.");
+       handleCloseModal();
+     } catch (error) {
+       console.error("Error deleting parking entry:", error);
+       alert("Failed to delete parking entry.");
+     }
+  }
+
+  const handleDetail = async (parkingId) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}parkings?apiKey=${apiKey}&page=${page}&limit=${limit}`
+        `${API_BASE_URL}parkings/${parkingId}?apiKey=${apiKey}`
       );
-      if (response.data && Array.isArray(response.data.data)) {
-        setParkingData(response.data.data);
-        setTotalPages(Math.ceil(response.data.meta.total / limit));
+      if (response.data) {
+        setModalData(response.data.data);
+        setIsModalVisible(true);
       } else {
-        setParkingData([]);
-        setError(new Error("Invalid response format"));
+        console.error("Data not found");
       }
     } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
+      console.error(error);
     }
   };
 
-  const interval = setInterval(() => {
-    fetchData();
-  }, 5000); // Polling every 5 seconds (adjust as needed)
-
-  return () => clearInterval(interval); // Cleanup interval on unmount or dependencies change
-}, [page, apiKey, limit]);
-
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setModalData(null);
+  };
 
   const handlePreviousPage = () => {
     if (page > 1) setPage(page - 1);
@@ -81,6 +126,7 @@ useEffect(() => {
                       <th className="py-3 px-2 sm:px-6">TransactionId</th>
                       <th className="py-3 px-2 sm:px-6">Price</th>
                       <th className="py-3 px-2 sm:px-6">Transaction Status</th>
+                      <th className="py-3 px-2 sm:px-6">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -136,10 +182,41 @@ useEffect(() => {
                             "N/A"
                           )}
                         </td>
+                        <td className="py-3 px-2 sm:px-6">
+                          <div className="flex items-center justify-end gap-x-1">
+                            <button
+                              type="submit"
+                              className="rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              onClick={() => handleDetail(parkings.parkingId)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-4 h-4"
+                              >
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+
+                {isModalVisible && modalData && (
+                  <Modal
+                    modalData={modalData}
+                    handleCloseModal={handleCloseModal}
+                    handleDelete={handleDelete}
+                  />
+                )}
               </div>
               <div className="flex justify-between items-center mt-4">
                 <button
@@ -167,5 +244,198 @@ useEffect(() => {
     </div>
   );
 };
+
+const Modal = ({ modalData, handleCloseModal, handleDelete }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <center>
+          <h2 className="text-xl font-semibold mb-4">
+            Detail Parking Plat {modalData.code}
+          </h2>
+        </center>
+        <div className="sm:col-span-2">
+          <label
+            htmlFor="first-name"
+            className="block text-sm font-semibold leading-6 text-gray-900"
+          >
+            Parking Id
+          </label>
+          <div className="mt-2.5">
+            <input
+              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              value={modalData.parkingId}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="first-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Parking In
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={moment(modalData.parkingin)
+                  .utc()
+                  .add(7, "hours")
+                  .format("YYYY-MM-DD HH:mm:ss")}
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="last-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Parking Out
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.parkingout
+                    ? moment(modalData.parkingout)
+                        .utc()
+                        .add(7, "hours")
+                        .format("YYYY-MM-DD HH:mm:ss")
+                    : "On Progress"
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="first-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Status Parking
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={modalData.status}
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="last-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Total Time
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.totaltime ? modalData.totaltime : "On Progress"
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="first-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Transaction Id
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.transactions
+                    ? modalData.transactions.transactionId
+                    : "-"
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="last-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Total Price
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.transactions
+                    ? modalData.transactions.totalprice
+                    : "Counting"
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label
+              htmlFor="first-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Transaction Status
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.transactions
+                    ? modalData.transactions.transactionstatus
+                    : "-"
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="last-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Pay At
+            </label>
+            <div className="mt-2.5">
+              <input
+                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={
+                  modalData.transactions
+                    ? modalData.transactions.updated_at
+                    : "-  "
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 flex items-center justify-end gap-x-6">
+          <button
+            type="submit"
+            className="text-sm font-semibold leading-6 text-red-500"
+            onClick={() => handleDelete(modalData.parkingId)}
+          >
+            Delete
+          </button>
+          <button
+            type="submit"
+            className="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            onClick={handleCloseModal}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 export default ParkingList;
