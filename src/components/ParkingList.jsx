@@ -14,58 +14,87 @@ const ParkingList = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
-
+  const [search, setSearch] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}parkings?apiKey=${apiKey}&page=${page}&limit=${limit}`
-        );
-        if (response.data && Array.isArray(response.data.data)) {
-          setParkingData(response.data.data);
+  const isEqual = (a, b) => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) return false;
+    }
+    return true;
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}parkings`, {
+        params: {
+          apiKey,
+          page,
+          limit,
+          search_query: search,
+        },
+      });
+
+      if (response.data && Array.isArray(response.data.data)) {
+        const newParkingData = response.data.data;
+        if (!isEqual(parkingData, newParkingData)) {
+          setParkingData(newParkingData);
           setTotalPages(Math.ceil(response.data.meta.total / limit));
-        } else {
-          setParkingData([]);
-          setError(new Error("Invalid response format"));
         }
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
+      } else {
+        setParkingData([]);
+        setError(new Error("Invalid response format"));
       }
-    };
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
 
     const interval = setInterval(() => {
       fetchData();
-    }, 5000); // Polling every 5 seconds (adjust as needed)
+    }, 5000);
 
-    return () => clearInterval(interval); // Cleanup interval on unmount or dependencies change
-  }, [page, apiKey, limit]);
+    return () => clearInterval(interval);
+  }, [page, limit, search, apiKey]);
 
-  const handleDelete = async(parkingId) => {
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(1);
+    fetchData();
+  };
+
+  const handleDelete = async (parkingId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this parking entry?"
     );
     if (!confirmed) return;
 
-     try {
-       await axios.delete(
-         `${API_BASE_URL}parkings/remove/${parkingId}?apiKey=${apiKey}`
-       );
+    try {
+      await axios.delete(
+        `${API_BASE_URL}parkings/remove/${parkingId}?apiKey=${apiKey}`
+      );
 
-       setParkingData(
-         parkingData.filter((parking) => parking.parkingId !== parkingId)
-       );
-       alert("Parking entry deleted successfully.");
-       handleCloseModal();
-     } catch (error) {
-       console.error("Error deleting parking entry:", error);
-       alert("Failed to delete parking entry.");
-     }
-  }
+      setParkingData(
+        parkingData.filter((parking) => parking.parkingId !== parkingId)
+      );
+      alert("Parking entry deleted successfully.");
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error deleting parking entry:", error);
+      alert("Failed to delete parking entry.");
+    }
+  };
 
   const handleDetail = async (parkingId) => {
     try {
@@ -112,6 +141,16 @@ const ParkingList = () => {
                 <h1 className="mt-4 text-l font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
                   List All Parking
                 </h1>
+                <form onSubmit={handleSearchSubmit}>
+                  <input
+                    className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    type="text"
+                    placeholder="Search by code"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <button type="submit">Search</button>
+                </form>
               </div>
               <div className="relative shadow rounded-lg mt-3 overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500">
