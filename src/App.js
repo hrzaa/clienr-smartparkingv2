@@ -24,66 +24,64 @@ function App() {
   });
 
   return (
-    <div className="container">
-      <Router>
-        <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
+    <Router>
+      <Routes>
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
 
-          <Route
-            path="/parkings"
-            element={
-              <PrivateRoute>
-                <ParkingList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <PrivateRoute>
-                <Users />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/price"
-            element={
-              <PrivateRoute>
-                <Price />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <PrivateRoute>
-                <Settings />
-              </PrivateRoute>
-            }
-          />
+        <Route
+          path="/parkings"
+          element={
+            <PrivateRoute>
+              <ParkingList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PrivateRoute>
+              <Users />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/price"
+          element={
+            <PrivateRoute>
+              <Price />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+        />
 
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/parkingsv1" element={<ParkingListv1 />} />
-          <Route path="/emptyParking" element={<EmptyParking />} />
-          <Route path="/laporan" element={<Laporan />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/Success" element={<Success />} />
-          <Route path="/parking_areas_1" element={<ParkingDetection1 />} />
-          <Route path="/parking_areas_2" element={<ParkingDetection2 />} />
-          <Route path="/aldini" element={<Aldini />} />
-          <Route path="/gates" element={<Gates />} />
-        </Routes>
-      </Router>
-    </div>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/parkingsv1" element={<ParkingListv1 />} />
+        <Route path="/emptyParking" element={<EmptyParking />} />
+        <Route path="/laporan" element={<Laporan />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/Success" element={<Success />} />
+        <Route path="/parking_areas_1" element={<ParkingDetection1 />} />
+        <Route path="/parking_areas_2" element={<ParkingDetection2 />} />
+        <Route path="/aldini" element={<Aldini />} />
+        <Route path="/gates" element={<Gates />} />
+      </Routes>
+    </Router>
   );
 }
 
