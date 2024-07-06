@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import ModalParkingDetections from "./parkings/ModalParkingDetections";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -111,28 +113,27 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/parking_areas_2"
-                target="blank"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              <div
+                onClick={() => setShowModal(true)}
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  class="size-6"
+                  className="size-6"
                 >
+                  <path d="M6.75 12a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0z" />
                   <path
-                    fill-rule="evenodd"
-                    d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5h-.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5h-.75V3.75a.75.75 0 0 0 0-1.5h-15ZM9 6a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm-.75 3.75A.75.75 0 0 1 9 9h1.5a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM9 12a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm3.75-5.25A.75.75 0 0 1 13.5 6H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM13.5 9a.75.75 0 0 0 0 1.5H15A.75.75 0 0 0 15 9h-1.5Zm-.75 3.75a.75.75 0 0 1 .75-.75H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM9 19.5v-2.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 9 19.5Z"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    d="M12 1.25a7.25 7.25 0 0 0-7.25 7.25v3.814a7.99 7.99 0 0 0-1.608 4.827v.109a1.25 1.25 0 0 0 1.25 1.25h16.216a1.25 1.25 0 0 0 1.25-1.25v-.109c0-1.833-.585-3.527-1.608-4.827V8.5A7.25 7.25 0 0 0 12 1.25z"
+                    clipRule="evenodd"
                   />
                 </svg>
-
                 <span className="flex-1 ms-3 whitespace-nowrap">
-                  Parking detection
+                  Parking Information
                 </span>
-              </Link>
+              </div>
             </li>
             <li>
               <Link
@@ -220,6 +221,10 @@ const Sidebar = () => {
           </ul>
         </div>
       </aside>
+
+      {showModal && (
+        <ModalParkingDetections closeModal={() => setShowModal(false)} />
+      )}
     </>
   );
 };

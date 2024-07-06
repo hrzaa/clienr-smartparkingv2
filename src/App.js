@@ -10,13 +10,14 @@ import Laporan from "./components/Laporan";
 import Payment from "./components/Payment";
 import Success from "./components/Success";
 import Gates from "./components/Gates";
-import Aldini from "./components/aldini/index";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Settings from "./components/Settings";
 import PrivateRoute from "./components/PrivateRoute";
-import ParkingDetection1 from "./components/aldini/ParkingDetection1";
-import ParkingDetection2 from "./components/aldini/ParkingDetection2";
+import ParkingDetection2 from "./components/parkings/ParkingDetection2";
+import ParkingDetection3 from "./components/parkings/ParkingDetection3";
+import ParkingDetection4 from "./components/parkings/ParkingDetection4";
+import ParkingDetection1 from "./components/parkings/ParkingDetection1";
 
 function App() {
   useEffect(() => {
@@ -76,10 +77,11 @@ function App() {
         <Route path="/laporan" element={<Laporan />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/Success" element={<Success />} />
-        <Route path="/parking_areas_1" element={<ParkingDetection1 />} />
-        <Route path="/parking_areas_2" element={<ParkingDetection2 />} />
-        <Route path="/aldini" element={<Aldini />} />
         <Route path="/gates" element={<Gates />} />
+        <Route path="/parking_detections/1" element={<ParkingDetection1 />} />
+        <Route path="/parking_detections/2" element={<ParkingDetection2 />} />
+        <Route path="/parking_detections/3" element={<ParkingDetection3 />} />
+        <Route path="/parking_detections/4" element={<ParkingDetection4 />} />
       </Routes>
     </Router>
   );

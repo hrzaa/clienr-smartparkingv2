@@ -10,6 +10,7 @@ const ParkingList = () => {
   const apiKey = Cookies.get("token");
   const [parkingData, setParkingData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingText, setLoadingText] = useState("LOADING");
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -125,7 +126,27 @@ const ParkingList = () => {
     if (page < totalPages) setPage(page + 1);
   };
 
-  if (loading) return <h2>Loading...</h2>;
+  useEffect(() => {
+    let currentStageLoading = 0;
+    const loadingStages = ["LOADING", "LOADING.", "LOADING..", "LOADING..."];
+
+    const interval = setInterval(() => {
+      currentStageLoading = (currentStageLoading + 1) % loadingStages.length;
+      setLoadingText(loadingStages[currentStageLoading]);
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen text-zinc-800">
+        <h1 className="font-bold text-2xl lg:text-5xl text-center">
+          {loadingText}
+        </h1>
+      </div>
+    );
+  }
 
   if (error) return <h2>Error: {error.message}</h2>;
 
@@ -475,6 +496,5 @@ const Modal = ({ modalData, handleCloseModal, handleDelete }) => {
     </div>
   );
 };
-
 
 export default ParkingList;
