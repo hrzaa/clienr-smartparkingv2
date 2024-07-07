@@ -2,12 +2,13 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../config";
 
-
 const ParkingDetection3 = () => {
   const [parkingData, setParkingData] = useState([]);
+  const [parkingStatus, setParkingStatus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState("LOADING");
   const [error, setError] = useState(null);
+  const [allStatus, setAllStatus] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -15,11 +16,20 @@ const ParkingDetection3 = () => {
       if (response.data === "full") {
         setParkingData("full");
       } else {
-        setParkingData(response.data);
+        const newAllStatus = response.data.flatMap((parking) =>
+          parking.parking_spaces.map((space) => space.status)
+        );
+        setAllStatus(newAllStatus);
+        if (JSON.stringify(parkingStatus) !== JSON.stringify(newAllStatus)) {
+          const updatedParkingData = response.data.map((item) => ({
+            ...item,
+            img_url: `${item.img_url}?t=${new Date().getTime()}`,
+          }));
+          setParkingStatus(newAllStatus);
+          setParkingData(updatedParkingData);
+        }
       }
-      setTimeout(() => {
-        setLoading(false);
-      }, 2500);
+      setLoading(false);
     } catch (error) {
       setError(error);
       setLoading(false);
@@ -29,7 +39,7 @@ const ParkingDetection3 = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchData();
-    }, 100);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -41,7 +51,7 @@ const ParkingDetection3 = () => {
     const interval = setInterval(() => {
       currentStageLoading = (currentStageLoading + 1) % loadingStages.length;
       setLoadingText(loadingStages[currentStageLoading]);
-    }, 500);
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
@@ -75,7 +85,6 @@ const ParkingDetection3 = () => {
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {parkingData.map((item) => {
-              const imgUrl = `${item.img_url}?t=${new Date().getTime()}`;
               return (
                 <div
                   key={item.id}
@@ -88,7 +97,7 @@ const ParkingDetection3 = () => {
                     <p className="text-sm mb-2">Location : {item.location}</p>
                   </div>
                   <img
-                    src={imgUrl}
+                    src={item.img_url}
                     alt={item.img}
                     className="w-full rounded shadow-lg"
                   />

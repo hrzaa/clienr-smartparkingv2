@@ -27,33 +27,34 @@ const ParkingList = () => {
     return true;
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}parkings`, {
-        params: {
-          apiKey,
-          page,
-          limit,
-          search_query: search,
-        },
-      });
+const fetchData = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}parkings`, {
+      params: {
+        apiKey,
+        page,
+        limit,
+        search_query: search.trim() !== "" ? search : undefined,
+      },
+    });
 
-      if (response.data && Array.isArray(response.data.data)) {
-        const newParkingData = response.data.data;
-        if (!isEqual(parkingData, newParkingData)) {
-          setParkingData(newParkingData);
-          setTotalPages(Math.ceil(response.data.meta.total / limit));
-        }
-      } else {
-        setParkingData([]);
-        setError(new Error("Invalid response format"));
+    if (response.data && Array.isArray(response.data.data)) {
+      const newParkingData = response.data.data;
+      if (!isEqual(parkingData, newParkingData)) {
+        setParkingData(newParkingData);
+        setTotalPages(Math.ceil(response.data.meta.total / limit));
       }
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
+      setError(null); // Clear any previous errors
+    } else {
+      setParkingData([]);
+      setError(new Error("Invalid response format"));
     }
-  };
+  } catch (error) {
+    setError(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchData();
@@ -69,11 +70,14 @@ const ParkingList = () => {
     setSearch(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
+const handleSearchSubmit = (e) => {
+  e.preventDefault();
+  if (search.trim() === "") {
     setPage(1);
-    fetchData();
-  };
+    setSearch(""); // Clear search
+  }
+  fetchData(); // Fetch data based on current search value
+};
 
   const handleDelete = async (parkingId) => {
     const confirmed = window.confirm(
@@ -148,7 +152,7 @@ const ParkingList = () => {
     );
   }
 
-  if (error) return <h2>Error: {error.message}</h2>;
+  // if (error) return <h2>Error: {error.message}</h2>;
 
   return (
     <div className="flex flex-col sm:flex-row">
@@ -190,83 +194,93 @@ const ParkingList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {parkingData.map((parkings, index) => (
-                      <tr className="bg-white border-b" key={parkings.id}>
-                        <td className="py-3 px-1 text-center">
-                          {index + 1 + (page - 1) * limit}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6 font-medium text-gray-900">
-                          {parkings.code}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          <button className="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            {parkings.status}
-                          </button>
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {moment(parkings.parkingin)
-                            .utc()
-                            .add(7, "hours")
-                            .format("YYYY-MM-DD HH:mm:ss")}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {parkings.parkingout
-                            ? moment(parkings.parkingout)
-                                .utc()
-                                .add(7, "hours")
-                                .format("YYYY-MM-DD HH:mm:ss")
-                            : "On Progress"}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {parkings.totaltime !== null
-                            ? `${parkings.totaltime} Hours`
-                            : "On Progress"}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {parkings.transactions
-                            ? parkings.transactions.transactionId
-                            : "N/A"}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {parkings.transactions &&
-                          parkings.transactions.totalprice !== undefined
-                            ? `Rp ${parkings.transactions.totalprice.toLocaleString()}`
-                            : "Counting"}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          {parkings.transactions ? (
-                            <button className="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                              {parkings.transactions.transactionstatus}
-                            </button>
-                          ) : (
-                            "N/A"
-                          )}
-                        </td>
-                        <td className="py-3 px-2 sm:px-6">
-                          <div className="flex items-center justify-end gap-x-1">
-                            <button
-                              type="submit"
-                              className="rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                              onClick={() => handleDetail(parkings.parkingId)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-4 h-4"
-                              >
-                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </button>
-                          </div>
+                    {error ? (
+                      <tr>
+                        <td colSpan="10" className="py-3 px-6 text-center">
+                          Data code not found
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      parkingData.map((parkings, index) => (
+                        <tr
+                          className="bg-white border-b"
+                          key={parkings.parkingId}
+                        >
+                          <td className="py-3 px-1 text-center">
+                            {index + 1 + (page - 1) * limit}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6 font-medium text-gray-900">
+                            {parkings.code}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            <button className="justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                              {parkings.status}
+                            </button>
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {moment(parkings.parkingIn)
+                              .utc()
+                              .add(7, "hours")
+                              .format("YYYY-MM-DD HH:mm:ss")}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {parkings.parkingOut
+                              ? moment(parkings.parkingOut)
+                                  .utc()
+                                  .add(7, "hours")
+                                  .format("YYYY-MM-DD HH:mm:ss")
+                              : "On Progress"}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {parkings.totalTime !== null
+                              ? `${parkings.totalTime} Hours`
+                              : "On Progress"}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {parkings.transactionId
+                              ? parkings.transactionId
+                              : "N/A"}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {parkings.price !== undefined
+                              ? `Rp ${parkings.price.toLocaleString()}`
+                              : "Counting"}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            {parkings.transactionStatus ? (
+                              <button className="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+                                {parkings.transactionStatus}
+                              </button>
+                            ) : (
+                              "N/A"
+                            )}
+                          </td>
+                          <td className="py-3 px-2 sm:px-6">
+                            <div className="flex items-center justify-end gap-x-1">
+                              <button
+                                type="submit"
+                                className="rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                onClick={() => handleDetail(parkings.parkingId)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  className="w-4 h-4"
+                                >
+                                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
 
