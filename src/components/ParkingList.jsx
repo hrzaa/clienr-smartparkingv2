@@ -218,14 +218,14 @@ const handleSearchSubmit = (e) => {
                             </button>
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {moment(parkings.parkingIn)
+                            {moment(parkings.parkingin)
                               .utc()
                               .add(7, "hours")
                               .format("YYYY-MM-DD HH:mm:ss")}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
                             {parkings.parkingOut
-                              ? moment(parkings.parkingOut)
+                              ? moment(parkings.parkingout)
                                   .utc()
                                   .add(7, "hours")
                                   .format("YYYY-MM-DD HH:mm:ss")
@@ -237,19 +237,19 @@ const handleSearchSubmit = (e) => {
                               : "On Progress"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.transactionId
-                              ? parkings.transactionId
+                            {parkings.transactions.transactionId
+                              ? parkings.transactions.transactionId
                               : "N/A"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.price !== undefined
-                              ? `Rp ${parkings.price.toLocaleString()}`
+                            {parkings.transactions.totalprice !== undefined
+                              ? `Rp ${parkings.transactions.totalprice.toLocaleString()}`
                               : "Counting"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.transactionStatus ? (
+                            {parkings.transactions.transactionstatus ? (
                               <button className="justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                                {parkings.transactionStatus}
+                                {parkings.transactions.transactionstatus}
                               </button>
                             ) : (
                               "N/A"
