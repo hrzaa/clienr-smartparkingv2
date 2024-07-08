@@ -233,7 +233,7 @@ const handleSearchSubmit = (e) => {
                           </td>
                           <td className="py-3 px-2 sm:px-6">
                             {parkings.totalTime !== null
-                              ? `${parkings.totalTime} Hours`
+                              ? `${parkings.totaltime} Hours`
                               : "On Progress"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
@@ -487,6 +487,23 @@ const Modal = ({ modalData, handleCloseModal, handleDelete }) => {
                     : "-  "
                 }
               />
+            </div>
+          </div>
+          <div className="sm:col-span-2">
+            <label
+              htmlFor="first-name"
+              className="block text-sm font-semibold leading-6 text-gray-900"
+            >
+              Payment URL
+            </label>
+            <div className="mt-2.5">
+              <a
+                href={modalData.transactions.snap_redirect_url}
+                target="_blank"
+                className="inline-block w-full rounded-md border border-gray-300 bg-white px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              >
+                {modalData.transactions.snap_redirect_url}
+              </a>
             </div>
           </div>
         </div>
