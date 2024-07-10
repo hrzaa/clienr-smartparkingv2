@@ -13,7 +13,9 @@ const ParkingDetection4 = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}parking_areas`);
-      if (response.data === "full") {
+      if (!response.data.length) {
+        setParkingData([]);
+      } else if (response.data === "full") {
         setParkingData("full");
       } else {
         const newAllStatus = response.data.flatMap((parking) =>
