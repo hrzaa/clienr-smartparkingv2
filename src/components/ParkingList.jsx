@@ -224,7 +224,7 @@ const handleSearchSubmit = (e) => {
                               .format("YYYY-MM-DD HH:mm:ss")}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.parkingOut
+                            {parkings.parkingout
                               ? moment(parkings.parkingout)
                                   .utc()
                                   .add(7, "hours")
