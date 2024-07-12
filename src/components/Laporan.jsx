@@ -12,6 +12,7 @@ const Laporan = () => {
   const apiKey = Cookies.get("token");
 
   const [parkingData, setParkingData] = useState([]);
+  const [transactionCount, setTransactionCount] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState("LOADING");
   const [error, setError] = useState(null);
@@ -45,6 +46,18 @@ const Laporan = () => {
           setAllData([]);
         }
 
+        const getCountResponse = await axios.get(
+          `${API_BASE_URL}transactions/count?apiKey=${apiKey}`
+        );
+
+        if (
+          getCountResponse.data && typeof getCountResponse.data.data === "number"
+        ) {
+          setTransactionCount(getCountResponse.data.data);
+        } else {
+          setTransactionCount("N/A");
+        }
+
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -67,6 +80,11 @@ const Laporan = () => {
     const tableElement = document.createElement("div");
     tableElement.innerHTML = `
       <div id="print-table">
+          <h2 style="margin-bottom: 20px; margin-left: 10px; font-size: 24px; font-weight: bold; text-align: center; color: #4CAF50;">
+            Transaction Count: Rp. ${
+              transactionCount !== null ? transactionCount : "N/A"
+            }
+        </h2>
         <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
@@ -139,25 +157,27 @@ const Laporan = () => {
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF();
-    const imgWidth = 190;
-    const pageHeight = pdf.internal.pageSize.height;
+    const margin = 10;
+    const imgWidth = pdf.internal.pageSize.width - 2 * margin;
+    const pageHeight = pdf.internal.pageSize.height - 2 * margin;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
-    let position = 10;
+    let position = margin;
 
-    pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
 
     while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
+      position = heightLeft - imgHeight + margin;
       pdf.addPage();
-      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
 
     pdf.save("Laporan.pdf");
     document.body.removeChild(tableElement);
   };
+
 
   useEffect(() => {
     let currentStageLoading = 0;
@@ -206,6 +226,10 @@ const Laporan = () => {
                 id="parking-table"
                 className="relative shadow rounded-lg mt-3 overflow-x-auto"
               >
+                <h2 className="mb-2 ml-2 text-2xl font-bold tracking-tight text-gray-900">
+                  Transaction Count: Rp.  
+                   {transactionCount !== null ? transactionCount : "N/A"}
+                </h2>
                 <table className="w-full text-sm text-left text-gray-500">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-100">
                     <tr>
