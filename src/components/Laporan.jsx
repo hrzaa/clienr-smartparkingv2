@@ -20,53 +20,75 @@ const Laporan = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
+  const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const fetchData = async () => {
+    try {
+      // Fetching paginated data for UI display
+      const response = await axios.get(`${API_BASE_URL}parkings`, {
+        params: {
+          apiKey,
+          page,
+          limit,
+          search_query: search.trim() !== "" ? search : undefined,
+          start_date: startDate,
+          end_date: endDate,
+        },
+      });
+
+      if (response.data && Array.isArray(response.data.data)) {
+        setParkingData(response.data.data);
+        setTotalPages(Math.ceil(response.data.meta.total / limit));
+      } else {
+        setParkingData([]);
+      }
+
+      const allDataResponse = await axios.get(`${API_BASE_URL}parkings`, {
+        params: {
+          apiKey,
+          page: 1,
+          limit: 1000,
+          search_query: search.trim() !== "" ? search : undefined,
+          start_date: startDate,
+          end_date: endDate,
+        },
+      });
+
+      if (allDataResponse.data && Array.isArray(allDataResponse.data.data)) {
+        setAllData(allDataResponse.data.data);
+      } else {
+        setAllData([]);
+      }
+
+      const getCountResponse = await axios.get(
+        `${API_BASE_URL}transactions/count`,
+        {
+          params: { apiKey },
+        }
+      );
+
+      if (
+        getCountResponse.data &&
+        typeof getCountResponse.data.data === "number"
+      ) {
+        setTransactionCount(getCountResponse.data.data);
+      } else {
+        setTransactionCount("N/A");
+      }
+
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetching paginated data for UI display
-        const response = await axios.get(
-          `${API_BASE_URL}parkings?apiKey=${apiKey}&page=${page}&limit=${limit}`
-        );
-
-        if (response.data && Array.isArray(response.data.data)) {
-          setParkingData(response.data.data);
-          setTotalPages(Math.ceil(response.data.meta.total / limit));
-        } else {
-          setParkingData([]);
-        }
-
-        const allDataResponse = await axios.get(
-          `${API_BASE_URL}parkings?apiKey=${apiKey}&page=1&limit=1000`
-        );
-
-        if (allDataResponse.data && Array.isArray(allDataResponse.data.data)) {
-          setAllData(allDataResponse.data.data);
-        } else {
-          setAllData([]);
-        }
-
-        const getCountResponse = await axios.get(
-          `${API_BASE_URL}transactions/count?apiKey=${apiKey}`
-        );
-
-        if (
-          getCountResponse.data && typeof getCountResponse.data.data === "number"
-        ) {
-          setTransactionCount(getCountResponse.data.data);
-        } else {
-          setTransactionCount("N/A");
-        }
-
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [apiKey, page, limit]);
+  }, [apiKey, page, limit, search, startDate, endDate]);
+
   const handlePreviousPage = () => {
     if (page > 1) setPage(page - 1);
   };
@@ -75,6 +97,23 @@ const Laporan = () => {
     if (page < totalPages) setPage(page + 1);
   };
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(1);
+    fetchData();
+  };
   const handlePrint = async () => {
     // Temporarily display all data for PDF generation
     const tableElement = document.createElement("div");
@@ -100,7 +139,7 @@ const Laporan = () => {
             </tr>
           </thead>
           <tbody>
-            ${allData
+            ${parkingData
               .map(
                 (parkings, index) => `
               <tr class="bg-white border-b" key=${parkings.id}>
@@ -178,7 +217,6 @@ const Laporan = () => {
     document.body.removeChild(tableElement);
   };
 
-
   useEffect(() => {
     let currentStageLoading = 0;
     const loadingStages = ["LOADING", "LOADING.", "LOADING..", "LOADING..."];
@@ -226,9 +264,50 @@ const Laporan = () => {
                 id="parking-table"
                 className="relative shadow rounded-lg mt-3 overflow-x-auto"
               >
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-wrap justify-center gap-4 mb-4"
+                >
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="text"
+                      placeholder="Search by plat number ..."
+                      value={search}
+                      onChange={handleSearchChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="date"
+                      placeholder="Start Date"
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="date"
+                      placeholder="End Date"
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                      type="submit"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </form>
+
                 <h2 className="mb-2 ml-2 text-2xl font-bold tracking-tight text-gray-900">
-                  Transaction Count: Rp.  
-                   {transactionCount !== null ? transactionCount : "N/A"}
+                  Transaction Count: Rp.
+                  {transactionCount !== null ? transactionCount : "N/A"}
                 </h2>
                 <table className="w-full text-sm text-left text-gray-500">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-100">
@@ -269,7 +348,7 @@ const Laporan = () => {
                             : "On Progress"}
                         </td>
                         <td className="py-3 px-3 sm:px-6">
-                          {parkings.totaltime !== null
+                          {parkings.totaltime
                             ? `${parkings.totaltime} Hours`
                             : "On Progress"}
                         </td>

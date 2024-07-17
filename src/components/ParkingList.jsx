@@ -16,6 +16,8 @@ const ParkingList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
 
@@ -35,6 +37,8 @@ const fetchData = async () => {
         page,
         limit,
         search_query: search.trim() !== "" ? search : undefined,
+        start_date: startDate,
+        end_date: endDate,
       },
     });
 
@@ -64,20 +68,25 @@ const fetchData = async () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [page, limit, search, apiKey]);
+  }, [page, limit, search, startDate, endDate, apiKey]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
 
-const handleSearchSubmit = (e) => {
-  e.preventDefault();
-  if (search.trim() === "") {
-    setPage(1);
-    setSearch(""); // Clear search
-  }
-  fetchData(); // Fetch data based on current search value
-};
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(1); // Reset page to 1 when performing a new search
+    fetchData(); // Fetch data based on current search and date filter values
+  };
 
   const handleDelete = async (parkingId) => {
     const confirmed = window.confirm(
@@ -163,18 +172,48 @@ const handleSearchSubmit = (e) => {
           <div className="flex flex-col mt-5">
             <div className="w-full mx-auto p-4 sm:p-10">
               <div className="text-center">
-                <h1 className="mt-4 text-l font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
+                <h1 className="text-l font-bold tracking-tight text-gray-900 sm:text-5xl mb-10">
                   List All Parking
                 </h1>
-                <form onSubmit={handleSearchSubmit}>
-                  <input
-                    className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    type="text"
-                    placeholder="Search by code"
-                    value={search}
-                    onChange={handleSearchChange}
-                  />
-                  <button type="submit">Search</button>
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-wrap justify-center gap-4"
+                >
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="text"
+                      placeholder="Search by plat number"
+                      value={search}
+                      onChange={handleSearchChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="date"
+                      placeholder="Start Date"
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="date"
+                      placeholder="End Date"
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                      type="submit"
+                    >
+                      Search
+                    </button>
+                  </div>
                 </form>
               </div>
               <div className="relative shadow rounded-lg mt-3 overflow-x-auto">
@@ -232,7 +271,7 @@ const handleSearchSubmit = (e) => {
                               : "On Progress"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.totalTime !== null
+                            {parkings.totaltime !== null
                               ? `${parkings.totaltime} Hours`
                               : "On Progress"}
                           </td>
@@ -242,7 +281,7 @@ const handleSearchSubmit = (e) => {
                               : "N/A"}
                           </td>
                           <td className="py-3 px-2 sm:px-6">
-                            {parkings.transactions 
+                            {parkings.transactions
                               ? `Rp ${parkings.transactions.totalprice.toLocaleString()}`
                               : "Counting"}
                           </td>
