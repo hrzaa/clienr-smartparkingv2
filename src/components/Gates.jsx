@@ -1,16 +1,17 @@
 import React from "react";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { API_BASE_URL } from "../config";
 
 const Gates = () => {
+  const apiKey = Cookies.get("token");
 
   const { mutate } = useSWRConfig();
   const fetcher = async () => {
-    const response = await axios.get(`${API_BASE_URL}gates`);
+    const response = await axios.get(`${API_BASE_URL}gates?apiKey=${apiKey}`);
     return response.data;
   };
 

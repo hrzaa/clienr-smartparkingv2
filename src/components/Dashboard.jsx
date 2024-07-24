@@ -37,13 +37,13 @@ const Dashboard = () => {
      return <h2>Error loading data</h2>;
    }
 
-   if (!parkingsData || !usersData || !transactionsData) {
+   if (!parkingsData || !usersData || !transactionsData) {  
      return <h2>Loading...</h2>;
    }
 
     const totalParkingsLength = parkingsData.data.length;
     const totalUsersLength = usersData.data.length;
-    // const totalTransactions = transactionsData?.data ?? 0;
+    const totalTransactions = transactionsData.data;
 
  
  return (
@@ -64,7 +64,9 @@ const Dashboard = () => {
            >
              <p className="font-normal text-gray-700">Total Visitors</p>
              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-               {totalParkingsLength}
+               {totalParkingsLength === 0
+                 ? "0"
+                 : totalParkingsLength}
              </h5>
            </a>
            <a
@@ -75,7 +77,9 @@ const Dashboard = () => {
                Total Paid Transactions
              </p>
              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-               Rp. {transactionsData.data}
+               {totalTransactions === 0
+                 ? "0"
+                 : `Rp. ${totalTransactions}`}
              </h5>
            </a>
            <a
@@ -84,7 +88,7 @@ const Dashboard = () => {
            >
              <p className="font-normal text-gray-700">User Sign Up</p>
              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-               {totalUsersLength}
+               {totalUsersLength === 0 ? "0" : totalUsersLength}
              </h5>
            </a>
          </div>

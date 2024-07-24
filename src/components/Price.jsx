@@ -7,6 +7,8 @@ import { API_BASE_URL } from "../config";
 
 function Update() {
   const [priceId, setPriceId] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState(""); // Tambahkan state untuk nama pengguna
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
@@ -24,9 +26,22 @@ function Update() {
 
         if (priceData) {
           setPriceId(priceData.priceId);
+          setUserId(priceData.userId);
           setPrice(priceData.price);
           setSuccess("");
           setError("");
+
+          // Fetch user data based on userId
+          const userResponse = await axios.get(
+            `${API_BASE_URL}user/get/${priceData.userId}?apiKey=${apiKey}`
+          );
+          const userData = userResponse.data.data;
+
+          if (userData) {
+            setUserName(userData.username); // Set nama pengguna
+          } else {
+            setError("No user data found.");
+          }
         } else {
           setError("No price data found.");
         }
@@ -84,18 +99,18 @@ function Update() {
             <form className="space-y-6" onSubmit={handleUpdate}>
               {success && (
                 <div
-                  class="bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3"
+                  className="bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3"
                   role="alert"
                 >
-                  <p class="font-bold">{success}</p>
+                  <p className="font-bold">{success}</p>
                 </div>
               )}
               {error && (
                 <div
-                  class="bg-red-100 border-t border-b border-red-500 text-red-700 px-4 py-3"
+                  className="bg-red-100 border-t border-b border-red-500 text-red-700 px-4 py-3"
                   role="alert"
                 >
-                  <p class="font-bold">{error}</p>
+                  <p className="font-bold">{error}</p>
                 </div>
               )}
               <div className="relative mt-2 rounded-md shadow-sm">
@@ -112,14 +127,19 @@ function Update() {
                   required
                 />
               </div>
-
+              <input
+                className="block w-full rounded-md border-0 p-2 text-gray-700 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                id="userName"
+                type="text"
+                value={userName}
+                readOnly
+              />
               <input
                 className="block w-full px-4 py-3 mt-4 text-gray-700 bg-white border rounded-md focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring focus:ring-opacity-40"
                 id="priceId"
                 type="hidden"
                 placeholder="priceId"
                 value={priceId}
-                onChange={(e) => setPriceId(e.target.value)}
                 readOnly
                 required
               />
