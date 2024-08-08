@@ -15,7 +15,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}user/login`,
+        `${API_BASE_URL}users/login`,
         {
           username,
           password,
@@ -36,11 +36,7 @@ function Login() {
         error.response && error.response.data && error.response.data.errors
           ? error.response.data.errors
           : error.message;
-      // alert(`Registration error: ${errorMessage}`);
       setError(errorMessage);
-      // console.error("Registration error:", errorMessage);
-
-      // console.error("Login error:", error.response ? error.response.data : error.message);
     }
   }
 
@@ -111,22 +107,7 @@ function Login() {
                  >
                    Sign Up
                  </Link>
-                 {/* <a
-                   href="#"
-                   class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                 >
-                   Sign up
-                 </a> */}
                </p>
-
-               {/* <div>
-                 <button
-                   type="submit"
-                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                 >
-                   Sign in
-                 </button>
-               </div> */}
              </form>
            </div>
          </div>

@@ -14,14 +14,12 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${API_BASE_URL}users`, {
+      const response = await axios.post(`${API_BASE_URL}users/register`, {
         username,
         password,
       });
 
       const { data } = response.data;
-
-      // const isSecure = window.location.protocol === "http:";
 
       navigate("/dashboard");
     } catch (error) {
@@ -30,8 +28,6 @@ function Register() {
           ? error.response.data.errors
           : error.message;
           setError(errorMessage);
-          // console.error("Registration error:", errorMessage);
-          // alert(`Registration error: ${errorMessage}`);
     }
   };
 

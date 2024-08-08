@@ -22,7 +22,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Button to toggle sidebar on mobile */}
       <button
         onClick={toggleSidebar}
         className="fixed top-4 left-4 z-50 p-2 text-white bg-blue-600 rounded-md md:hidden"

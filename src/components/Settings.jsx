@@ -21,7 +21,7 @@ function Update() {
         const apiKey = Cookies.get("token");
 
         const response = await axios.get(
-          `${API_BASE_URL}user/get/${userId}?apiKey=${apiKey}`
+          `${API_BASE_URL}users/${userId}?apiKey=${apiKey}`
         );
         const userData = response.data.data;
 
@@ -49,7 +49,7 @@ function Update() {
       const apiKey = Cookies.get("token");
 
       await axios.patch(
-        `${API_BASE_URL}user/update/${userId}?apiKey=${apiKey}`,
+        `${API_BASE_URL}users/${userId}?apiKey=${apiKey}`,
         {
           username,
           password,

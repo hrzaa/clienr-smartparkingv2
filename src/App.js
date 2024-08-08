@@ -4,7 +4,6 @@ import Dashboard from "./components/Dashboard";
 import Users from "./components/Users";
 import Price from "./components/Price";
 import ParkingList from "./components/ParkingList";
-import ParkingListv1 from "./components/ParkingListv1";
 import EmptyParking from "./components/EmptyParking";
 import Laporan from "./components/Laporan";
 import Payment from "./components/Payment";
@@ -72,7 +71,6 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/parkingsv1" element={<ParkingListv1 />} />
         <Route path="/emptyParking" element={<EmptyParking />} />
         <Route path="/laporan" element={<Laporan />} />
         <Route path="/payment" element={<Payment />} />

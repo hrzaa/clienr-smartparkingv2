@@ -96,7 +96,7 @@ const fetchData = async () => {
 
     try {
       await axios.delete(
-        `${API_BASE_URL}parkings/remove/${parkingId}?apiKey=${apiKey}`
+        `${API_BASE_URL}parkings/${parkingId}?apiKey=${apiKey}`
       );
 
       setParkingData(

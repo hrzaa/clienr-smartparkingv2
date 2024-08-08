@@ -33,7 +33,7 @@ function Update() {
 
           // Fetch user data based on userId
           const userResponse = await axios.get(
-            `${API_BASE_URL}user/get/${priceData.userId}?apiKey=${apiKey}`
+            `${API_BASE_URL}users/${priceData.userId}?apiKey=${apiKey}`
           );
           const userData = userResponse.data.data;
 
@@ -65,7 +65,7 @@ function Update() {
       const apiKey = Cookies.get("token");
 
       const response = await axios.patch(
-        `${API_BASE_URL}price/update/${priceId}?apiKey=${apiKey}`,
+        `${API_BASE_URL}prices/${priceId}?apiKey=${apiKey}`,
         { price: parseFloat(price) }
       );
 
