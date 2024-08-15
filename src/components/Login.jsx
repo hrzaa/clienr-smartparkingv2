@@ -15,7 +15,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}users/login`,
+        `${API_BASE_URL}user/login`,
         {
           username,
           password,
