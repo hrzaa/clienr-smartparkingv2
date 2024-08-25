@@ -63,7 +63,7 @@ const Laporan = () => {
       }
 
       const getCountResponse = await axios.get(
-        `${API_BASE_URL}transactions/count`,
+        `${API_BASE_URL}sumTransactions`,
         {
           params: { apiKey },
         }
